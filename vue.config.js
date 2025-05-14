@@ -15,6 +15,6 @@ module.exports = defineConfig({
     }
   },
   publicPath: process.env.NODE_ENV === 'production'
-    ? '/88studio/' // GitHub repository name
+    ? '/88studio/'
     : '/'
 })
