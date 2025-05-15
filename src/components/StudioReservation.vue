@@ -154,11 +154,23 @@ export default {
         return sunday;
       };
       
+      // 현재 시간을 HH:mm:ss 형식으로 반환하는 함수
+      const getCurrentTime = () => {
+        const now = new Date();
+        // 현재 시간에서 1시간을 뺀 시간을 반환
+        now.setHours(now.getHours() - 1);
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        return `${hours}:${minutes}:00`;
+      };
+      
       return {
         plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
         initialView: isMobile ? 'timeGridThreeDay' : 'timeGridWeek',
         defaultView: isMobile ? 'timeGridThreeDay' : 'timeGridWeek',
         initialDate: isMobile ? new Date() : getThisWeekSunday(),
+        scrollTime: getCurrentTime(), // 현재 시간보다 1시간 앞의 시간으로 스크롤
+        scrollTimeReset: false, // 날짜 변경시에도 스크롤 위치 유지
         firstDay: 0, // 0은 일요일
         headerToolbar: {
           left: 'prev,next today',
@@ -223,7 +235,7 @@ export default {
         weekends: true,
         editable: false,
         events: this.filteredEvents,
-        height: isMobile ? 'auto' : 600,
+        height: isMobile ? '100%' : 600,
         aspectRatio: isMobile ? 0.5 : 1.35,
         allDaySlot: false,
         slotMinTime: '00:00:00',
@@ -335,6 +347,8 @@ export default {
           // 현재 뷰 타입 저장
           vm.lastViewType = dateInfo.view.type;
         },
+        handleWindowResize: true,
+        expandRows: true,
       }
     }
   },
@@ -621,6 +635,7 @@ export default {
 /* 캘린더 스타일 조정 */
 :deep(.fc) {
   font-size: 0.875rem;
+  height: 100% !important;
 }
 
 /* 선택 영역 스타일 */
@@ -642,15 +657,25 @@ export default {
 @media (max-width: 640px) {
   :deep(.fc) {
     font-size: 0.75rem;
+    height: calc(100vh - 200px) !important;
   }
   
-  :deep(.fc-toolbar-title) {
-    font-size: 1.2rem !important;
+  :deep(.fc-view-harness) {
+    height: 100% !important;
   }
   
-  :deep(.fc-button) {
-    padding: 0.2rem 0.4rem !important;
-    font-size: 0.75rem !important;
+  :deep(.fc-scroller) {
+    height: 100% !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  :deep(.fc-timegrid-slots) {
+    min-height: unset !important;
+  }
+  
+  :deep(.fc-timegrid-col-frame) {
+    min-height: unset !important;
   }
   
   :deep(.fc-toolbar.fc-header-toolbar) {
@@ -680,10 +705,6 @@ export default {
   
   :deep(.fc-timegrid-event) {
     min-height: 1.5rem !important;
-  }
-  
-  :deep(.fc-timegrid-col-frame) {
-    min-height: 100vh !important;
   }
 }
 
