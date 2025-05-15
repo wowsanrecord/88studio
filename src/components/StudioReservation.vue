@@ -191,6 +191,11 @@ export default {
                 sunday.setDate(currentDate.getDate() - currentDate.getDay());
                 calendarApi.gotoDate(sunday);
               }
+
+              // 스크롤 위치 조정을 위해 약간의 딜레이 추가
+              setTimeout(() => {
+                vm.scrollToCurrentTime();
+              }, 300);
             }
           },
           customDay: {
@@ -199,6 +204,11 @@ export default {
               const calendarApi = vm.$refs.fullCalendarRef.getApi();
               calendarApi.changeView('timeGridDay');
               calendarApi.today();
+              
+              // 스크롤 위치 조정을 위해 약간의 딜레이 추가
+              setTimeout(() => {
+                vm.scrollToCurrentTime();
+              }, 300);
             }
           }
         },
@@ -233,7 +243,7 @@ export default {
         weekends: true,
         editable: false,
         events: this.filteredEvents,
-        height: isMobile ? '100%' : 'auto',
+        height: isMobile ? '100%' : 'calc(100vh - 250px)',
         aspectRatio: isMobile ? 0.5 : 1.35,
         allDaySlot: false,
         slotMinTime: '00:00:00',
@@ -345,15 +355,13 @@ export default {
           // 현재 뷰 타입 저장
           vm.lastViewType = dateInfo.view.type;
           
-          // 스크롤 위치 조정
-          setTimeout(() => {
-            const scrollContainer = document.querySelector('.fc-scroller-liquid-absolute');
-            if (scrollContainer) {
-              const currentHour = new Date().getHours();
-              const hourHeight = scrollContainer.scrollHeight / 24;
-              scrollContainer.scrollTop = hourHeight * currentHour - (scrollContainer.clientHeight / 2);
-            }
-          }, 100);
+          // 타임그리드 뷰의 경우에만 스크롤 조정
+          if (dateInfo.view.type.includes('timeGrid')) {
+            // 스크롤 위치 조정을 위한 메서드 호출
+            setTimeout(() => {
+              vm.scrollToCurrentTime();
+            }, 200);
+          }
         },
         handleWindowResize: true,
         expandRows: true,
@@ -374,6 +382,14 @@ export default {
       const calendarApi = this.$refs.fullCalendarRef.getApi();
       calendarApi.changeView('timeGridThreeDay');
     }
+    
+    // 로딩 후 현재 시간으로 스크롤 조정
+    this.$nextTick(() => {
+      // 약간의 지연 시간을 두고 스크롤 조정
+      setTimeout(() => {
+        this.scrollToCurrentTime();
+      }, 500);
+    });
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.handleResize);
@@ -383,6 +399,13 @@ export default {
       this.selectedRoom = room
       this.filterEventsByRoom()
       console.log('Selected room:', room)
+      
+      // 룸 선택 후 현재 시간으로 스크롤 조정
+      this.$nextTick(() => {
+        setTimeout(() => {
+          this.scrollToCurrentTime()
+        }, 200)
+      })
     },
     filterEventsByRoom() {
       if (this.selectedRoom === '전체') {
@@ -437,6 +460,13 @@ export default {
         })
         
         calendarApi.render()
+        
+        // 이벤트 업데이트 후 현재 시간으로 스크롤 조정
+        this.$nextTick(() => {
+          setTimeout(() => {
+            this.scrollToCurrentTime()
+          }, 200)
+        })
       }
     },
     showMessage(text, type = 'success') {
@@ -654,6 +684,30 @@ export default {
       };
       
       this.openReservationModal();
+    },
+    scrollToCurrentTime() {
+      // 타임그리드 뷰의 경우에만 스크롤 조정
+      setTimeout(() => {
+        // 시간 스크롤러 요소 선택
+        const timeGridScroller = document.querySelector('.fc-timegrid-body .fc-scroller-liquid-absolute');
+        
+        if (timeGridScroller) {
+          const currentHour = new Date().getHours();
+          const hourHeight = timeGridScroller.scrollHeight / 24;
+          // 현재 시간에서 화면 중앙에 위치하도록 조정
+          const targetScrollTop = (hourHeight * currentHour) - (timeGridScroller.clientHeight / 2);
+          
+          console.log('Scrolling to current time:', {
+            currentHour,
+            hourHeight,
+            targetScrollTop,
+            scrollHeight: timeGridScroller.scrollHeight,
+            clientHeight: timeGridScroller.clientHeight
+          });
+          
+          timeGridScroller.scrollTop = targetScrollTop;
+        }
+      }, 100);
     }
   }
 }
@@ -676,6 +730,20 @@ export default {
   font-size: 0.875rem;
   height: 100% !important;
   min-height: 700px !important;
+}
+
+/* 스크롤 관련 추가 스타일 - 데스크톱 */
+:deep(.fc-timegrid-body) {
+  overflow-x: hidden !important;
+}
+
+:deep(.fc-timegrid-body .fc-scroller-liquid-absolute) {
+  overflow-y: auto !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
 }
 
 /* 선택 영역 스타일 */
