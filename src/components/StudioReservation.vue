@@ -175,7 +175,7 @@ export default {
             type: 'timeGrid',
             duration: { days: 3 },
             buttonText: '3일',
-            visibleRange: function(currentDate) {
+            visibleRange: function() {
               const start = new Date();
               const end = new Date(start);
               end.setDate(start.getDate() + 2);
