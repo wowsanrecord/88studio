@@ -137,7 +137,8 @@ export default {
         text: '',
         type: 'success'
       },
-      isMobileView: window.innerWidth < 640
+      isMobileView: window.innerWidth < 640,
+      lastViewType: null
     }
   },
   computed: {
@@ -162,14 +163,31 @@ export default {
         headerToolbar: {
           left: 'prev,next today',
           center: 'title',
-          right: isMobile ? 'timeGridDay,customWeek,dayGridMonth' : 'timeGridDay,timeGridWeek,dayGridMonth'
+          right: isMobile ? 'timeGridDay,customWeek,dayGridMonth' : 'customDay,customWeek,dayGridMonth'
         },
         customButtons: {
           customWeek: {
             text: '주간',
             click: () => {
               const calendarApi = vm.$refs.fullCalendarRef.getApi();
-              calendarApi.changeView('timeGridThreeDay');
+              if (vm.isMobileView) {
+                calendarApi.changeView('timeGridThreeDay');
+                calendarApi.today();
+              } else {
+                calendarApi.changeView('timeGridWeek');
+                // 현재 선택된 날짜의 해당 주 일요일로 이동
+                const currentDate = calendarApi.getDate();
+                const sunday = new Date(currentDate);
+                sunday.setDate(currentDate.getDate() - currentDate.getDay());
+                calendarApi.gotoDate(sunday);
+              }
+            }
+          },
+          customDay: {
+            text: '일간',
+            click: () => {
+              const calendarApi = vm.$refs.fullCalendarRef.getApi();
+              calendarApi.changeView('timeGridDay');
               calendarApi.today();
             }
           }
@@ -178,17 +196,7 @@ export default {
           timeGridWeek: {
             type: 'timeGrid',
             duration: { days: 7 },
-            buttonText: '주간',
-            visibleRange: function(currentDate) {
-              if (!isMobile) {
-                const start = new Date(currentDate);
-                start.setDate(currentDate.getDate() - currentDate.getDay());
-                const end = new Date(start);
-                end.setDate(start.getDate() + 6);
-                return { start, end };
-              }
-              return null;
-            }
+            buttonText: '주간'
           },
           timeGridThreeDay: {
             type: 'timeGrid',
@@ -313,6 +321,19 @@ export default {
         },
         eventsSet: function(events) {
           console.log('Events set in calendar:', events.length);
+        },
+        datesSet: function(dateInfo) {
+          // 일간 보기로 처음 전환될 때만 오늘 날짜로 이동
+          if (dateInfo.view.type === 'timeGridDay' && 
+              !vm.lastViewType && // 이전 뷰 타입이 없는 경우에만 (첫 전환 시)
+              dateInfo.view.currentStart.toDateString() !== new Date().toDateString()) {
+            setTimeout(() => {
+              const calendarApi = vm.$refs.fullCalendarRef.getApi();
+              calendarApi.today();
+            }, 0);
+          }
+          // 현재 뷰 타입 저장
+          vm.lastViewType = dateInfo.view.type;
         },
       }
     }
