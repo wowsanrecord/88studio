@@ -17,10 +17,16 @@ module.exports = defineConfig({
   publicPath: process.env.NODE_ENV === 'production'
     ? '/88studio/'
     : '/',
-  chainWebpack: config => {
-    config.plugin('copy').tap(([options]) => {
-      options[0].ignore = [...(options[0].ignore || []), 'README.md']
-      return [options]
-    })
+  configureWebpack: {
+    plugins: [
+      {
+        apply: compiler => {
+          compiler.hooks.emit.tapAsync('RemoveReadme', (compilation, callback) => {
+            delete compilation.assets['README.md']
+            callback()
+          })
+        }
+      }
+    ]
   }
 })
