@@ -149,12 +149,7 @@ export default {
         plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
         initialView: isMobile ? 'timeGridThreeDay' : 'timeGridWeek',
         defaultView: isMobile ? 'timeGridThreeDay' : 'timeGridWeek',
-        initialDate: (() => {
-          const today = new Date();
-          const sunday = new Date(today);
-          sunday.setDate(today.getDate() - today.getDay());
-          return sunday;
-        })(),
+        initialDate: new Date(),
         headerToolbar: {
           left: 'prev,next today',
           center: 'title',
@@ -166,6 +161,7 @@ export default {
             click: () => {
               const calendarApi = vm.$refs.fullCalendarRef.getApi();
               calendarApi.changeView('timeGridThreeDay');
+              calendarApi.today();
             }
           }
         },
@@ -173,25 +169,16 @@ export default {
           timeGridWeek: {
             type: 'timeGrid',
             duration: { days: 7 },
-            buttonText: '주간',
-            visibleRange: function() {
-              const currentDate = this.currentData.currentDate;
-              const start = new Date(currentDate);
-              start.setDate(currentDate.getDate() - currentDate.getDay());
-              const end = new Date(start);
-              end.setDate(start.getDate() + 6);
-              return { start, end };
-            }
+            buttonText: '주간'
           },
           timeGridThreeDay: {
             type: 'timeGrid',
             duration: { days: 3 },
             buttonText: '3일',
-            visibleRange: function() {
-              // 오늘부터 3일
+            visibleRange: function(currentDate) {
               const start = new Date();
               const end = new Date(start);
-              end.setDate(start.getDate() + 2); // 오늘 포함 3일
+              end.setDate(start.getDate() + 2);
               return { start, end };
             }
           },
@@ -551,13 +538,14 @@ export default {
         // 모바일 뷰로 변경된 경우
         if (this.isMobileView) {
           calendarApi.changeView('timeGridThreeDay');
+          calendarApi.today();
         } else {
           // 데스크톱 뷰로 변경된 경우
+          calendarApi.changeView('timeGridWeek');
           const today = new Date();
           const sunday = new Date(today);
           sunday.setDate(today.getDate() - today.getDay());
           calendarApi.gotoDate(sunday);
-          calendarApi.changeView('timeGridWeek');
         }
       }
     },
