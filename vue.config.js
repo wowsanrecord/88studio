@@ -21,13 +21,19 @@ module.exports = defineConfig({
     plugins: [
       {
         apply: compiler => {
-          compiler.hooks.done.tap('BuildDonePlugin', () => {
-            // 빌드가 완료된 후 실행되는 로직
-            console.log('Build completed successfully!')
+          compiler.hooks.done.tap('BuildDonePlugin', stats => {
+            if (stats.hasErrors()) {
+              console.error('Build failed with errors!')
+            } else {
+              console.log('Build completed successfully!')
+            }
           })
         }
       }
     ]
   },
-  outputDir: 'dist'
+  outputDir: 'dist',
+  assetsDir: '',
+  indexPath: 'index.html',
+  productionSourceMap: false
 })
