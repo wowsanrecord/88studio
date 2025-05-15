@@ -28,5 +28,6 @@ module.exports = defineConfig({
         }
       }
     ]
-  }
+  },
+  outputDir: 'dist'
 })
