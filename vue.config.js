@@ -1,7 +1,10 @@
 const { defineConfig } = require('@vue/cli-service')
 
 module.exports = defineConfig({
-  transpileDependencies: true,
+  publicPath: process.env.NODE_ENV === 'production' ? '/88studio/' : '/',
+  outputDir: 'dist',
+  assetsDir: '',
+  productionSourceMap: false,
   devServer: {
     proxy: {
       '/api': {
@@ -13,27 +16,5 @@ module.exports = defineConfig({
         }
       }
     }
-  },
-  publicPath: process.env.NODE_ENV === 'production'
-    ? '/88studio/'
-    : '/',
-  configureWebpack: {
-    plugins: [
-      {
-        apply: compiler => {
-          compiler.hooks.done.tap('BuildDonePlugin', stats => {
-            if (stats.hasErrors()) {
-              console.error('Build failed with errors!')
-            } else {
-              console.log('Build completed successfully!')
-            }
-          })
-        }
-      }
-    ]
-  },
-  outputDir: 'dist',
-  assetsDir: '',
-  indexPath: 'index.html',
-  productionSourceMap: false
+  }
 })
