@@ -1,7 +1,7 @@
 <template>
   <div class="studio-reservation">
     <!-- Message Container -->
-    <div id="messageContainer" class="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 max-w-lg w-90">
+    <div id="messageContainer" class="fixed top-20 left-1/2 transform -translate-x-1/2 z-[1000] max-w-lg w-90">
       <div
         v-if="message.text"
         :class="[
@@ -559,14 +559,16 @@ export default {
           this.closePasswordModal();
           this.showMessage('예약이 삭제되었습니다.', 'success');
         } else {
-          this.showMessage('예약 삭제에 실패했습니다.', 'error');
+          this.showMessage(response.data.message || '예약 삭제에 실패했습니다.', 'error');
         }
       } catch (error) {
         console.error('예약 삭제 에러:', error);
-        if (error.response?.status === 403) {
-          this.showMessage('비밀번호가 일치하지 않습니다.', 'error');
+        if (error.response?.status === 401) {
+          this.showMessage(error.response.data.error || '비밀번호가 일치하지 않습니다.', 'error');
+        } else if (error.response?.data?.error) {
+          this.showMessage(error.response.data.error, 'error');
         } else {
-          this.showMessage('예약 삭제 중 오류가 발생했습니다.', 'error');
+          this.showMessage('예약 삭제 중 오류가 발생했습니다. 다시 시도해주세요.', 'error');
         }
       }
     },
@@ -592,7 +594,7 @@ export default {
         const response = await axios.delete('/reservations', {
           data: {
             id: this.currentEvent.id,
-            password: '0106*'
+            isAdmin: true
           },
           headers: {
             'Content-Type': 'application/json'
@@ -605,11 +607,17 @@ export default {
           this.closeDeleteConfirmModal();
           this.showMessage('예약이 삭제되었습니다.', 'success');
         } else {
-          this.showMessage('예약 삭제에 실패했습니다.', 'error');
+          this.showMessage(response.data.message || '관리자 권한으로 예약 삭제에 실패했습니다.', 'error');
         }
       } catch (error) {
         console.error('관리자 예약 삭제 에러:', error);
-        this.showMessage('예약 삭제 중 오류가 발생했습니다.', 'error');
+        if (error.response?.status === 401) {
+          this.showMessage(error.response.data.error || '관리자 권한이 없습니다.', 'error');
+        } else if (error.response?.data?.error) {
+          this.showMessage(error.response.data.error, 'error');
+        } else {
+          this.showMessage('예약 삭제 중 오류가 발생했습니다. 다시 시도해주세요.', 'error');
+        }
       }
     },
     handleResize() {
