@@ -15,7 +15,7 @@
 
     <!-- Header -->
     <div class="flex flex-col items-center mb-4 sm:mb-8 pt-4 sm:pt-8">
-      <h1 class="text-2xl sm:text-4xl font-bold mb-4 sm:mb-6">88 Studio Reservation</h1>
+      <h1 class="text-2xl sm:text-4xl font-bold mb-4 sm:mb-6">88 STUDIO BOOKING</h1>
       
       <!-- 룸 선택 탭 -->
       <div class="flex flex-wrap justify-center gap-2 mb-4 sm:mb-6 px-2 w-full">
@@ -306,12 +306,12 @@ export default {
             };
           } else if (view === 'timeGridDay') {
             return {
-              html: `<div class="text-sm font-medium">${startTime}-${endTime} ${name}(${content})</div>`
+              html: `<div class="text-sm font-medium">${startTime}-${endTime} ${name} (${content})</div>`
             };
           } else {
             // timeGridWeek
             return {
-              html: `<div class="text-sm font-medium">${name}</div>`
+              html: `<div class="text-sm font-medium">${startTime}-${endTime}<br />${name} (${content})</div>`
             };
           }
         },
