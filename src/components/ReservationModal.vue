@@ -166,7 +166,7 @@ export default {
     },
     selectedDateInfo: {
       handler(newDateInfo) {
-        console.log('selectedDateInfo changed:', newDateInfo)
+        // console.log('selectedDateInfo changed:', newDateInfo)
         if (newDateInfo) {
           // 선택된 날짜를 폼에 설정
           const selectedDate = moment(newDateInfo.start).format('YYYY-MM-DD')
@@ -178,11 +178,11 @@ export default {
           this.form.startTime = startTime
           this.form.endTime = endTime
           
-          console.log('Auto-filled form:', {
-            date: this.form.date,
-            startTime: this.form.startTime,
-            endTime: this.form.endTime
-          })
+          // console.log('Auto-filled form:', {
+          //   date: this.form.date,
+          //   startTime: this.form.startTime,
+          //   endTime: this.form.endTime
+          // })
           
           // 시간 옵션 업데이트
           this.updateTimeOptions()
@@ -263,16 +263,16 @@ export default {
           const eventStartDate = startMoment.format('YYYY-MM-DD')
           const eventEndDate = endMoment.format('YYYY-MM-DD')
           
-          console.log('Checking reserved event:', {
-            title: event.title,
-            utcStart: event.start,
-            utcEnd: event.end,
-            kstStart: startMoment.format(),
-            kstEnd: endMoment.format(),
-            eventStartDate,
-            eventEndDate,
-            selectedDate: this.form.date
-          })
+          // console.log('Checking reserved event:', {
+          //   title: event.title,
+          //   utcStart: event.start,
+          //   utcEnd: event.end,
+          //   kstStart: startMoment.format(),
+          //   kstEnd: endMoment.format(),
+          //   eventStartDate,
+          //   eventEndDate,
+          //   selectedDate: this.form.date
+          // })
           
           // 이벤트가 선택된 날짜와 겹치는지 확인
           if (eventStartDate <= this.form.date && this.form.date <= eventEndDate) {
@@ -298,17 +298,17 @@ export default {
               endDate: eventEndDate
             })
             
-            console.log('Added reserved time:', {
-              room: this.form.room,
-              selectedDate: this.form.date,
-              startTime,
-              endTime
-            })
+            // console.log('Added reserved time:', {
+            //   room: this.form.room,
+            //   selectedDate: this.form.date,
+            //   startTime,
+            //   endTime
+            // })
           }
         }
       })
       
-      console.log('Total reserved times for', this.form.room, 'on', this.form.date, ':', reservedTimes)
+      // console.log('Total reserved times for', this.form.room, 'on', this.form.date, ':', reservedTimes)
       return reservedTimes
     },
     isTimeDisabled(time, reservedTimes, type) {

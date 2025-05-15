@@ -278,9 +278,9 @@ export default {
         },
         selectAllow: () => true,
         select: (selectInfo) => {
-          console.log('=== Date selected via calendarOptions ===');
-          console.log('selectInfo:', selectInfo);
-          console.log('Current selected room:', vm.selectedRoom);
+          // console.log('=== Date selected via calendarOptions ===');
+          // console.log('selectInfo:', selectInfo);
+          // console.log('Current selected room:', vm.selectedRoom);
           
           // 선택된 시간이 undefined인 경우 처리
           if (!selectInfo.start || !selectInfo.end) {
@@ -295,7 +295,7 @@ export default {
             endStr: selectInfo.endStr
           };
           
-          console.log('Selected time info stored:', vm.selectedDateInfo);
+          // console.log('Selected time info stored:', vm.selectedDateInfo);
           vm.openReservationModal();
         },
         eventContent: function(arg) {
@@ -326,22 +326,22 @@ export default {
           }
         },
         eventClick: function(clickInfo) {
-          console.log('Event clicked via calendarOptions');
+          // console.log('Event clicked via calendarOptions');
           vm.handleEventClick(clickInfo);
         },
-        eventDidMount: function(info) {
-          console.log('Event mounted:', {
-            title: info.event.title,
-            start: info.event.start?.toISOString(),
-            end: info.event.end?.toISOString()
-          });
-        },
-        viewDidMount: function(info) {
-          console.log('View changed to:', info.view.type);
-        },
-        eventsSet: function(events) {
-          console.log('Events set in calendar:', events.length);
-        },
+        // eventDidMount: function(info) {
+        //   console.log('Event mounted:', {
+        //     title: info.event.title,
+        //     start: info.event.start?.toISOString(),
+        //     end: info.event.end?.toISOString()
+        //   });
+        // },
+        // viewDidMount: function(info) {
+        //   console.log('View changed to:', info.view.type);
+        // },
+        // eventsSet: function(events) {
+        //   console.log('Events set in calendar:', events.length);
+        // },
         datesSet: function(dateInfo) {
           // 일간 보기로 처음 전환될 때만 오늘 날짜로 이동
           if (dateInfo.view.type === 'timeGridDay' && 
@@ -398,7 +398,7 @@ export default {
     selectRoom(room) {
       this.selectedRoom = room
       this.filterEventsByRoom()
-      console.log('Selected room:', room)
+      // console.log('Selected room:', room)
       
       // 룸 선택 후 현재 시간으로 스크롤 조정
       this.$nextTick(() => {
@@ -413,13 +413,13 @@ export default {
       } else {
         this.filteredEvents = this.events.filter(event => event.extendedProps.room === this.selectedRoom)
       }
-      console.log(`Filtered events for ${this.selectedRoom}:`, this.filteredEvents.length)
+      // console.log(`Filtered events for ${this.selectedRoom}:`, this.filteredEvents.length)
       this.updateCalendarEvents()
     },
     async loadReservations() {
       try {
         const response = await axios.get('/reservations')
-        console.log('Raw reservations from API:', response.data)
+        // console.log('Raw reservations from API:', response.data)
         
         this.events = response.data.map(event => {
           const startUTC = moment(event.start);
@@ -443,7 +443,7 @@ export default {
           }
         })
         
-        console.log('Processed events for calendar:', this.events)
+        // console.log('Processed events for calendar:', this.events)
         this.filterEventsByRoom()
       } catch (error) {
         console.error('예약 로드 에러:', error)
@@ -476,9 +476,9 @@ export default {
       }, 3000)
     },
     handleDateSelect(selectInfo) {
-      console.log('=== Date selected in handleDateSelect ===')
-      console.log('selectInfo:', selectInfo)
-      console.log('Current selected room:', this.selectedRoom)
+      // console.log('=== Date selected in handleDateSelect ===')
+      // console.log('selectInfo:', selectInfo)
+      // console.log('Current selected room:', this.selectedRoom)
       
       this.selectedDateInfo = {
         start: selectInfo.start,
@@ -487,7 +487,7 @@ export default {
         endStr: selectInfo.endStr
       }
       
-      console.log('Selected time info stored:', this.selectedDateInfo)
+      // console.log('Selected time info stored:', this.selectedDateInfo)
       this.openReservationModal()
     },
     openReservationModal() {
@@ -505,9 +505,9 @@ export default {
     },
     async handleReservationSubmit(formData) {
       try {
-        console.log('Submitting reservation:', formData);
+        // console.log('Submitting reservation:', formData);
         const response = await axios.post('/reservations', formData);
-        console.log('New reservation created:', response.data);
+        // console.log('New reservation created:', response.data);
         
         const startUTC = moment(response.data.start);
         const endUTC = moment(response.data.end);
@@ -547,7 +547,7 @@ export default {
       }
     },
     handleEventClick(clickInfo) {
-      console.log('Event clicked:', clickInfo)
+      // console.log('Event clicked:', clickInfo)
       
       this.currentEvent = {
         id: clickInfo.event.id,
@@ -697,13 +697,13 @@ export default {
           // 현재 시간에서 화면 중앙에 위치하도록 조정
           const targetScrollTop = (hourHeight * currentHour) - (timeGridScroller.clientHeight / 2);
           
-          console.log('Scrolling to current time:', {
-            currentHour,
-            hourHeight,
-            targetScrollTop,
-            scrollHeight: timeGridScroller.scrollHeight,
-            clientHeight: timeGridScroller.clientHeight
-          });
+          // console.log('Scrolling to current time:', {
+          //   currentHour,
+          //   hourHeight,
+          //   targetScrollTop,
+          //   scrollHeight: timeGridScroller.scrollHeight,
+          //   clientHeight: timeGridScroller.clientHeight
+          // });
           
           timeGridScroller.scrollTop = targetScrollTop;
         }

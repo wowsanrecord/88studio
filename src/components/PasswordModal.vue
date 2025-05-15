@@ -84,10 +84,10 @@ export default {
   },
   computed: {
     eventInfo() {
-      console.log('PasswordModal - currentEvent:', this.currentEvent)
+      // console.log('PasswordModal - currentEvent:', this.currentEvent)
       
       if (!this.currentEvent) {
-        console.log('PasswordModal - currentEvent is null/undefined')
+        // console.log('PasswordModal - currentEvent is null/undefined')
         return {
           name: '',
           room: '',
@@ -98,7 +98,7 @@ export default {
         }
       }
       
-      console.log('PasswordModal - extendedProps:', this.currentEvent.extendedProps)
+      // console.log('PasswordModal - extendedProps:', this.currentEvent.extendedProps)
       
       return {
         name: this.currentEvent.extendedProps?.name || '',
