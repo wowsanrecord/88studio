@@ -157,8 +157,6 @@ export default {
       // 현재 시간을 HH:mm:ss 형식으로 반환하는 함수
       const getCurrentTime = () => {
         const now = new Date();
-        // 현재 시간에서 1시간을 뺀 시간을 반환
-        now.setHours(now.getHours() - 1);
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
         return `${hours}:${minutes}:00`;
@@ -169,8 +167,8 @@ export default {
         initialView: isMobile ? 'timeGridThreeDay' : 'timeGridWeek',
         defaultView: isMobile ? 'timeGridThreeDay' : 'timeGridWeek',
         initialDate: isMobile ? new Date() : getThisWeekSunday(),
-        scrollTime: getCurrentTime(), // 현재 시간보다 1시간 앞의 시간으로 스크롤
-        scrollTimeReset: false, // 날짜 변경시에도 스크롤 위치 유지
+        scrollTime: getCurrentTime(),
+        scrollTimeReset: true,
         firstDay: 0, // 0은 일요일
         headerToolbar: {
           left: 'prev,next today',
@@ -235,7 +233,7 @@ export default {
         weekends: true,
         editable: false,
         events: this.filteredEvents,
-        height: isMobile ? '100%' : 600,
+        height: isMobile ? '100%' : 'auto',
         aspectRatio: isMobile ? 0.5 : 1.35,
         allDaySlot: false,
         slotMinTime: '00:00:00',
@@ -346,6 +344,16 @@ export default {
           }
           // 현재 뷰 타입 저장
           vm.lastViewType = dateInfo.view.type;
+          
+          // 스크롤 위치 조정
+          setTimeout(() => {
+            const scrollContainer = document.querySelector('.fc-scroller-liquid-absolute');
+            if (scrollContainer) {
+              const currentHour = new Date().getHours();
+              const hourHeight = scrollContainer.scrollHeight / 24;
+              scrollContainer.scrollTop = hourHeight * currentHour - (scrollContainer.clientHeight / 2);
+            }
+          }, 100);
         },
         handleWindowResize: true,
         expandRows: true,
@@ -636,6 +644,7 @@ export default {
 :deep(.fc) {
   font-size: 0.875rem;
   height: 100% !important;
+  min-height: 700px !important;
 }
 
 /* 선택 영역 스타일 */
@@ -658,6 +667,7 @@ export default {
   :deep(.fc) {
     font-size: 0.75rem;
     height: calc(100vh - 200px) !important;
+    min-height: auto !important;
   }
   
   :deep(.fc-view-harness) {
