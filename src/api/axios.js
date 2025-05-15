@@ -1,8 +1,7 @@
 import axios from 'axios';
 
-const baseURL = process.env.NODE_ENV === 'production'
-  ? 'https://api-three-drab-49.vercel.app/api'
-  : '/api';
+// API 기본 URL 설정
+const baseURL = 'https://api-three-drab-49.vercel.app/api';
 
 const instance = axios.create({
   baseURL,
@@ -14,7 +13,15 @@ const instance = axios.create({
 // 요청 인터셉터 추가
 instance.interceptors.request.use(
   (config) => {
-    // 요청이 전달되기 전에 작업 수행
+    // 기본 헤더 설정
+    config.headers = {
+      ...config.headers,
+      'Content-Type': 'application/json'
+    };
+
+    // CORS 관련 설정 제거 (서버 측에서 처리)
+    config.withCredentials = false;
+
     return config;
   },
   (error) => {

@@ -546,16 +546,28 @@ export default {
     },
     async handlePasswordSubmit(password) {
       try {
-        await axios.delete(`/reservations/${this.currentEvent.id}`, {
-          data: { password }
-        })
-        this.events = this.events.filter(event => event.id !== this.currentEvent.id)
-        this.filterEventsByRoom()
-        this.closePasswordModal()
-        this.showMessage('예약이 삭제되었습니다.', 'success')
+        const response = await axios.delete('/reservations', {
+          data: {
+            id: this.currentEvent.id,
+            password: password
+          }
+        });
+        
+        if (response.data.success) {
+          this.events = this.events.filter(event => event.id !== this.currentEvent.id);
+          this.filterEventsByRoom();
+          this.closePasswordModal();
+          this.showMessage('예약이 삭제되었습니다.', 'success');
+        } else {
+          this.showMessage('예약 삭제에 실패했습니다.', 'error');
+        }
       } catch (error) {
-        console.error('예약 삭제 에러:', error)
-        this.showMessage(error.response?.data?.error || '예약 삭제 중 오류가 발생했습니다.', 'error')
+        console.error('예약 삭제 에러:', error);
+        if (error.response?.status === 403) {
+          this.showMessage('비밀번호가 일치하지 않습니다.', 'error');
+        } else {
+          this.showMessage('예약 삭제 중 오류가 발생했습니다.', 'error');
+        }
       }
     },
     closeAdminPasswordModal() {
@@ -577,16 +589,27 @@ export default {
     },
     async confirmDeleteEvent() {
       try {
-        await axios.delete(`/admin/reservations/${this.currentEvent.id}`, {
-          data: { adminPassword: '0106*' }
-        })
-        this.events = this.events.filter(event => event.id !== this.currentEvent.id)
-        this.filterEventsByRoom()
-        this.closeDeleteConfirmModal()
-        this.showMessage('예약이 삭제되었습니다.', 'success')
+        const response = await axios.delete('/reservations', {
+          data: {
+            id: this.currentEvent.id,
+            password: '0106*'
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (response.data.success) {
+          this.events = this.events.filter(event => event.id !== this.currentEvent.id);
+          this.filterEventsByRoom();
+          this.closeDeleteConfirmModal();
+          this.showMessage('예약이 삭제되었습니다.', 'success');
+        } else {
+          this.showMessage('예약 삭제에 실패했습니다.', 'error');
+        }
       } catch (error) {
-        console.error('관리자 예약 삭제 에러:', error)
-        this.showMessage('예약 삭제 중 오류가 발생했습니다.', 'error')
+        console.error('관리자 예약 삭제 에러:', error);
+        this.showMessage('예약 삭제 중 오류가 발생했습니다.', 'error');
       }
     },
     handleResize() {
