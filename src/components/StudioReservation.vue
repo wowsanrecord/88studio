@@ -145,11 +145,20 @@ export default {
       const vm = this;
       const isMobile = window.innerWidth < 640;
       
+      // 현재 날짜의 해당 주 일요일을 구하는 함수
+      const getThisWeekSunday = () => {
+        const today = new Date();
+        const sunday = new Date(today);
+        sunday.setDate(today.getDate() - today.getDay());
+        return sunday;
+      };
+      
       return {
         plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
         initialView: isMobile ? 'timeGridThreeDay' : 'timeGridWeek',
         defaultView: isMobile ? 'timeGridThreeDay' : 'timeGridWeek',
-        initialDate: new Date(),
+        initialDate: isMobile ? new Date() : getThisWeekSunday(),
+        firstDay: 0, // 0은 일요일
         headerToolbar: {
           left: 'prev,next today',
           center: 'title',
@@ -169,7 +178,17 @@ export default {
           timeGridWeek: {
             type: 'timeGrid',
             duration: { days: 7 },
-            buttonText: '주간'
+            buttonText: '주간',
+            visibleRange: function(currentDate) {
+              if (!isMobile) {
+                const start = new Date(currentDate);
+                start.setDate(currentDate.getDate() - currentDate.getDay());
+                const end = new Date(start);
+                end.setDate(start.getDate() + 6);
+                return { start, end };
+              }
+              return null;
+            }
           },
           timeGridThreeDay: {
             type: 'timeGrid',
