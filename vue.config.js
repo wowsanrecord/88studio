@@ -21,9 +21,9 @@ module.exports = defineConfig({
     plugins: [
       {
         apply: compiler => {
-          compiler.hooks.emit.tapAsync('RemoveReadme', (compilation, callback) => {
-            delete compilation.assets['README.md']
-            callback()
+          compiler.hooks.done.tap('BuildDonePlugin', () => {
+            // 빌드가 완료된 후 실행되는 로직
+            console.log('Build completed successfully!')
           })
         }
       }
